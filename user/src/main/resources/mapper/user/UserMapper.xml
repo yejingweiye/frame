@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.user.domain.user.dao.UserMapper">
+
+    <resultMap type="com.example.user.domain.user.entity.User" id="UserResult">
+        <result property="username" column="username" jdbcType="VARCHAR" />
+        <result property="password" column="password" jdbcType="VARCHAR" />
+        <result property="phone" column="phone" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="selectUserVo">
+        username,
+        password,
+        phone
+    </sql>
+
+    <select id="selectUserList" parameterType="com.example.user.domain.user.entity.User" resultMap="UserResult">
+        select
+        <include refid="selectUserVo"/>
+        from user
+        <where>
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="phone != null  and phone != ''">and phone = #{phone}</if>
+        </where>
+    </select>
+
+    <select id="selectUserById" parameterType="String" resultMap="UserResult">
+        select
+        <include refid="selectUserVo"/>
+        from user
+        where username = #{username}
+    </select>
+
+    <insert id="insertUser" parameterType="com.example.user.domain.user.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">username,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="phone != null">phone,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">#{username},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="phone != null">#{phone},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertUserList" parameterType="java.util.List">
+        insert into user (
+        username,
+        password,
+        phone
+        )
+        values
+        <foreach collection="list" item="item" separator="," index="index">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{item.username},
+            #{item.password},
+            #{item.phone}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateUser" parameterType="com.example.user.domain.user.entity.User">
+        update user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="phone != null">phone = #{phone},</if>
+        </trim>
+        where username = #{username}
+    </update>
+
+    <delete id="deleteUserById" parameterType="String">
+        delete from user where username = #{username}
+    </delete>
+
+    <delete id="deleteUserByIds" parameterType="String">
+        delete from user where username in
+        <foreach item="username" collection="array" open="(" separator="," close=")">
+            #{username}
+        </foreach>
+    </delete>
+</mapper>

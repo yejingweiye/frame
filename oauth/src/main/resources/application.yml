@@ -1,0 +1,30 @@
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/user_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC
+    username: root
+    password: root
+  main:
+    allow-bean-definition-overriding: true
+
+auth:
+  ttl: 3600  #token存储到redis的过期时间
+  clientId: frame666
+  clientSecret: frame666
+#  cookieDomain: localhost
+#  cookieMaxAge: -1
+encrypt:
+  key-store:
+    location: classpath:/frame666.jks
+    secret: frame666
+    alias: frame666
+    password: frame666

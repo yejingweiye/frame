@@ -1,0 +1,35 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]': #匹配所有的请求
+            allowedOrigins: "*" #跨域处理，支持所有的域名
+            allowedMethods: #支持的方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      discovery:
+        locator:
+          enabled: true #开启注册中心路由功能
+          lower-case-service-id: true
+      routes:    #路由配置
+        - id: user_route
+          uri: lb://user
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - RewritePath=/api/user/(?<segment>.*),/$\{segment}
+            - name: RequestRateLimiter #限流 默认是facatory
+              args:
+                key-resolver: '#{@ipKeyResolver}'
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 3
+
+
+#redis config
+redis:
+  host: localhost
+  port: 6379
+  database: 0
